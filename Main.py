@@ -50,9 +50,8 @@ def say(text,lang=None):
 
             
 def language_setter(first_language,second_language):
-        
-    first_lang_name = get_language(first_language)
-    second_lang_name = get_language(second_language)
+    first_lang_name = get_language_code(first_language)
+    second_lang_name = get_language_code(second_language)
     speech_line = get_user_input("Person A, you can talk:", lang=first_lang_name)
 
     translator = Translator()
@@ -88,7 +87,7 @@ def listen_for_command():
         case "translate":
             langs =[]
             for word in res:
-                if get_language(word) != None:
+                if get_language_code(word) != None:
                     langs.append(word)
             if len(langs) <2:
                 say("Sorry, I didn't get your languages! Please try again.")
