@@ -9,7 +9,7 @@ r = sr.Recognizer()
 engine=pyttsx3.init()
 openai.api_key = "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"
 model_engine = "gpt-3.5-turbo"
-engine.setProperty('voice',"en")
+
 
 newVoiceRate = 145
 
@@ -50,53 +50,57 @@ def say(text,lang=None):
 
             
 def language_setter(first_language,second_language):
-    first_lang_name = get_language_code(first_language)
-    second_lang_name = get_language_code(second_language)
-    speech_line = get_user_input("Person A, you can talk:", lang=first_lang_name)
+    should_stop = False
+    langs =[first_language,second_language]
+    codes = [get_language_code(first_language),get_language_code(second_language)]
+    speaker:int = 0
+    while not should_stop:
+        speech_line = get_user_input(f"Person {speaker+1}, you can talk:", lang=langs[speaker])
 
-    translator = Translator()
+        translator = Translator()
 
-    text_to_translate = translator.translate(speech_line,src=first_lang_name,dest=second_lang_name)
-    text_o= text_to_translate.text
+        text_to_translate = translator.translate(speech_line,src=langs[speaker],dest=langs[1-speaker])
+        text_o= text_to_translate.text
 
-    say(text_o,lang=second_lang_name)
+        say(text_o,lang=codes[1-speaker])
 
-    res = re.findall(r'\w+', text_o)
-    if(res[0]=='end'):
-        return 0
-    else:
-        language_setter( second_language,first_language)
+        res = re.findall(r'\w+', text_o)
+        if(res[0]=='end'):
+            should_stop = True
+        speaker = 1-speaker
 
 
 def listen_for_command():
+    command = ""
+    while command != "end":
+        speech_line = get_user_input("Talk:")
+        res = re.findall(r'\w+', speech_line)
+        command = res[0]
+        match command:
+            case "search":
+                say("Got that!")
+                print(speech_line)
+                say(ask_chatgpt(speech_line))
+            case "blind":
+                print("HI")
+            case"emotions":
+                a = emotions()
+                print(a)
+            case "translate":
+                langs =[]
+                for word in res:
+                    if get_language_code(word) != None:
+                        langs.append(word)
+                if len(langs) <2:
+                    say("Sorry, I didn't get your languages! Please try again.")
+                else:
+                    say(f"Translating from {langs[0]} to {langs[1]}!")
+                    language_setter(langs[0], langs[1])
+            case "end":
+                say("closing down!")
+            case _:
+                say("Unknown command! please try again.")
 
-    speech_line=get_user_input("Talk:")
-    res = re.findall(r'\w+', speech_line)
-    command = res[0]
-    match command:
-        case "search":
-            say("Got that!")
-            print(speech_line)
-            say(ask_chatgpt(speech_line))
-            listen_for_command()
-        case "blind":
-            print("HI")
-        case"emotions":
-            a = emotions()
-            print(a)
-        case "translate":
-            langs =[]
-            for word in res:
-                if get_language_code(word) != None:
-                    langs.append(word)
-            if len(langs) <2:
-                say("Sorry, I didn't get your languages! Please try again.")
-            else:
-                say(f"Translating from {langs[0]} to {langs[1]}!")
-                language_setter(langs[0], langs[1])
-        case _:
-            say("Unknown command! please try again.")
-            listen_for_command()
 
 
 def ask_chatgpt(question):
@@ -124,7 +128,7 @@ def get_language_code(language_name):
 
 
 def main():
-    engine.setProperty('voice', "en")
+    engine.setProperty('voice', "ro")
     engine.setProperty('rate', newVoiceRate)
     listen_for_command()
     
