@@ -1,16 +1,15 @@
 import speech_recognition as sr
 import re
+import json
 import pyttsx3
 from googletrans import Translator
 import openai
 from monodb import emotions
-
-
-## Constants
 r = sr.Recognizer()
-engine = pyttsx3.init()
+engine=pyttsx3.init()
 openai.api_key = "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"
 model_engine = "gpt-3.5-turbo"
+
 newVoiceRate = 145
 
 def record():
@@ -22,8 +21,8 @@ def record():
             
 def language_setter(first_language,second_language):
         
-        First=get_language(first_language)
-        Second=get_language(second_language)
+        First=get_language_code(first_language)
+        Second=get_language_code(second_language)
         recog1 = sr.Recognizer()
         mc = sr.Microphone()
         with mc as source:
@@ -63,7 +62,7 @@ def record_the_speech():
                     print(your_words_is)
                     print(ask_chatgpt(your_words_is))
                     anwort=ask_chatgpt(your_words_is)
-                    reord_the_speech()
+                    record_the_speech()
                    #engine.setProperty('voice',Second)
                     
 
@@ -96,132 +95,23 @@ def ask_chatgpt(question):
         ])
     message = response.choices[0]['message']
     return message['content']
-def get_language(language):
-    if language=="Afrikaans":
-       return "af"
-    if language=="Arabic":
-       return "ar"
-    if language=="Bengali":
-       return "bn"
-    if language=="Bulgarian":
-       return "bg"
-    if language=="Mandarin":
-       return "zh"
-    if language=="Greek":
-       return "el"
-    if language=="Danish":
-       return "da"
-    if language=="Dutch":
-       return "nl"
-    if language=="English":
-       return "en"
-    if language=="Estonian":
-       return "et"
-    if language=="Filipino":
-       return "fil"
-    if language=="Finnish":
-       return "fi"
-    if language=="French":
-       return "fr"
-    if language=="Galician":
-       return "gl"
-    if language=="Georgian":
-       return "ka"
-    if language=="German":
-       return "de"
-    if language=="Gujarati":
-       return "gu"
-    if language=="French":
-       return "fr"
-    if language=="Hebrew":
-       return "iw"
-    if language=="Hindi":
-       return "hi"
-    if language=="Hungarian":
-       return "hu"
-    if language=="Icelandic":
-       return "is"
-    if language=="Indonesian":
-       return "id"
-    if language=="Italian":
-       return "it"
-    if language=="Japanese":
-       return "ja"
-    if language=="Javanese":
-       return "jv"
-    if language=="Kannada":
-       return "kn"
-    if language=="Kazakh":
-       return "kk"
-    if language=="Khmer":
-       return "km"
-    if language=="Korean":
-       return "ko"
-    if language=="Lao":
-       return "lo"
-    if language=="Latvian":
-       return "lv"
-    if language=="Lithuanian":
-       return "lt"
-    if language=="Macedonian":
-       return "mk"
-    if language=="Malay":
-       return "ms"
-    if language=="Marathi":
-       return "mr"
-    if language=="Mongolian":
-       return "mn"
-    if language=="Nepali":
-       return "ne"
-    if language=="Norwegian":
-       return "no"
-    if language=="Persian":
-       return "fa"
-    if language=="Polish":
-       return "pl"
-    if language=="Portuguese":
-       return "pt"
-    if language=="Punjabi":
-       return "pa"
-    if language=="Romanian":
-       return "ro"
-    if language=="Russian":
-       return "ru"
-    if language=="Serbian":
-       return "sr"
-    if language=="Sinhala":
-       return "si"
-    if language=="Slovak":
-       return "sk"
-    if language=="Spanish":
-       return "es"
-    if language=="Sundanese":
-       return "su"
-    if language=="Swahili":
-       return "sw"
-    if language=="Swedish":
-       return "sv"
-    if language=="Tamil":
-       return "ta"
-    if language=="Telugu":
-       return "te"
-    if language=="Thai":
-       return "th"
-    if language=="Turkish":
-       return "tr"
-    if language=="Ukrainian":
-       return "uk"
-    if language=="Urdu":
-       return "ur"
-    if language=="Vietnamese":
-       return "vi"
+
+
+supported_languages_info = json.load(open('supported_languages.json'))['text']
+
+
+def get_language_code(language_name):
+    for language in supported_languages_info:
+        if language['language'].lower() == language_name.lower():
+            return language['code']
+    return None
 
 
 def main():
     engine.setProperty('voice', "en")
     engine.setProperty('rate', newVoiceRate)
     record_the_speech()
-
+    
 
 if __name__ == "__main__":
     main()
