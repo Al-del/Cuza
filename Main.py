@@ -4,14 +4,15 @@ import pyttsx3
 from googletrans import Translator
 import openai
 from monodb import emotions
+
+
+## Constants
 r = sr.Recognizer()
-engine=pyttsx3.init()
+engine = pyttsx3.init()
 openai.api_key = "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"
 model_engine = "gpt-3.5-turbo"
-engine.setProperty('voice',"en")
-
 newVoiceRate = 145
-engine.setProperty('rate',newVoiceRate)
+
 def record():
     with sr.Microphone() as source:
             engine.say("TALK")
@@ -214,5 +215,13 @@ def get_language(language):
        return "ur"
     if language=="Vietnamese":
        return "vi"
-record_the_speech()
-    
+
+
+def main():
+    engine.setProperty('voice', "en")
+    engine.setProperty('rate', newVoiceRate)
+    record_the_speech()
+
+
+if __name__ == "__main__":
+    main()
