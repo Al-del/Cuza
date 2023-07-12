@@ -9,10 +9,9 @@ r = sr.Recognizer()
 engine=pyttsx3.init()
 openai.api_key = "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"
 model_engine = "gpt-3.5-turbo"
-engine.setProperty('voice',"en")
 
 newVoiceRate = 145
-engine.setProperty('rate',newVoiceRate)
+
 def record():
     with sr.Microphone() as source:
             engine.say("TALK")
@@ -108,5 +107,11 @@ def get_language_code(language_name):
     return None
 
 
-record_the_speech()
+def main():
+    engine.setProperty('voice', "en")
+    engine.setProperty('rate', newVoiceRate)
+    record_the_speech()
     
+
+if __name__ == "__main__":
+    main()
